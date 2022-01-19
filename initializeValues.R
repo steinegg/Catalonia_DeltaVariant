@@ -51,11 +51,10 @@ getCases <- function(n_vacc, n_pre){
   casesA = matrix(0, ncol = n_days, nrow = M)
   casesB = matrix(0, ncol = n_days, nrow = M)
   casesNoVacc = matrix(0, ncol = n_days, nrow = M)
-  casesV1 = matrix(0, ncol = n_days, nrow = M)
-  casesV2 = matrix(0, ncol = n_days, nrow = M)
   hosp = matrix(0, ncol = n_days, nrow = M)
   death = matrix(0, ncol = n_days, nrow = M)
   uci = matrix(0, ncol = n_days, nrow = M)
+  
   for(i in 1:M){
     cases[i,] = casesCat.dt[casesCat.dt$GRUP_EDAT == ageGroups[i] &
                               casesCat.dt$DATA >= startDate]$cases[1:n_days]
@@ -71,6 +70,7 @@ getCases <- function(n_vacc, n_pre){
     uci[i,] = casesCat.dt[casesCat.dt$GRUP_EDAT == ageGroups[i] &
                             casesCat.dt$DATA >= startDate]$uci[1:n_days]
   }
+  
   casesAgg = as.integer(casesCatAgg.dt[casesCatAgg.dt$DATA >= startDate]$cases[1:n_days])
   hospAgg <- as.integer(casesCatAgg.dt[casesCatAgg.dt$DATA >= startDate]$hosp[1:n_days])
   uciAgg <- as.integer(casesCatAgg.dt[casesCatAgg.dt$DATA >= startDate]$uci[1:n_days])
@@ -85,9 +85,7 @@ getCases <- function(n_vacc, n_pre){
 }
 
 getVaccination<- function(n_pre, n_days, n_vacc){
-  #download.file("https://dadescovid.cat/static/csv/catalunya_diari_total_pob.zip", "dataCat.zip")
-  #unzip("dataCat.zip")
-  
+
   casesCat.dt <- fread("data/catalunya_diari_total_pob.csv",header=TRUE)
   casesCat.dt <- casesCat.dt[casesCat.dt$SEXE != "Altres",]
   casesCat.dt <- casesCat.dt[casesCat.dt$GRUP_EDAT != "80 o m\xe9s",]
@@ -114,6 +112,7 @@ getVaccination<- function(n_pre, n_days, n_vacc){
     nu2[i,] <- c(vacCat.dt[vacCat.dt$GRUP_EDAT == ageGroups[i] & vacCat.dt$DATA >= startDate,]$vac2[1:(n_days+n_pre-n_vacc)],rep(0, n_vacc))
     nu1[i,] <- c(vacCat.dt[vacCat.dt$GRUP_EDAT == ageGroups[i] & vacCat.dt$DATA >= startDate,]$vac1[1:(n_days+n_pre-n_vacc)],rep(0, n_vacc))
   }
+  
   return(list(v1 = v1, v2 = v2, nu1 = nu1, nu2 = nu2, M = M))
 }
 
@@ -166,6 +165,7 @@ getIHR <- function(){
     pDICUShort[i] = (pDICU[2*(i-1)+1]*ageS[[2*(i-1)+1]] + pDICU[2*(i-1)+2]*ageS[[2*(i-1)+2]])/(ageS[[2*(i-1)+1]] + ageS[[2*(i-1)+2]])
     pDHShort[i] = (pDH[2*(i-1)+1]*ageS[[2*(i-1)+1]] + pDH[2*(i-1)+2]*ageS[[2*(i-1)+2]])/(ageS[[2*(i-1)+1]] + ageS[[2*(i-1)+2]])
   }
+  
   return(list(IHR = IHRshort, pICU = pICUshort, pDICU = pDICUShort, pDH = pDHShort))
 }
 
